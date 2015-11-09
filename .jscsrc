@@ -1,0 +1,7 @@
+{
+	"preset": "airbnb",
+	"disallowMultipleLineBreaks": null,
+	"requirePaddingNewLinesAfterBlocks": null,
+	"disallowSpacesInFunctionExpression": null,
+	"disallowSpacesInAnonymousFunctionExpression": null
+}
