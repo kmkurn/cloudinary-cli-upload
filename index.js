@@ -27,6 +27,13 @@ var argv = yargs
     type: 'string',
     nargs: 1
   })
+  .option('f', {
+    alias: 'folder',
+    demand: false,
+    describe: 'Cloudinary image folder',
+    type: 'string',
+    nargs: 1
+  })
   .help('h')
   .alias('h', 'help')
   .example('$0 --api-key 12345 --api-secret somesecret --cloud-name name ~/pics',
@@ -48,8 +55,11 @@ function logError(e) {
 }
 
 var imagesDir = argv._[0];
+var options = {
+  folder: argv.folder
+};
 
-uploader.uploadImages(imagesDir, function (err, result) {
+uploader.uploadImages(imagesDir, options, function (err, result) {
   if (err) {
     console.error(logError(err));
   } else {
