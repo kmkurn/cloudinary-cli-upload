@@ -11,14 +11,54 @@ chai.use(sinonChai);
 var expect = chai.expect;
 
 describe('lib/uploader.js', function () {
+  describe('.config()', function () {
+    context('when called with a config object', function () {
+      var uploader = rewire('../../lib/uploader');
+      var fakeConfig = {
+        apiKey: 'some api key',
+        apiSecret: 'some api secret',
+        cloudName: 'some cloud name'
+      };
+
+      var configSpy;
+
+      before('setup spies, stubs, etc', function () {
+        var cloudinary = uploader.__get__('cloudinary');
+        configSpy = sinon.spy(cloudinary, 'config');
+      });
+
+      after('tear down spies, stubs, etc', function () {
+        configSpy.reset();
+      });
+
+      it('should call cloudinary config method with the same config object', function () {
+        uploader.config(fakeConfig);
+
+        expect(configSpy).to.be.calledWithExactly({
+          api_key: fakeConfig.apiKey,
+          api_secret: fakeConfig.apiSecret,
+          cloud_name: fakeConfig.cloudName
+        });
+      });
+    });
+
+    context('when called with an incomplete config object', function () {
+      var uploader = rewire('../../lib/uploader');
+      var fakeConfig = {
+        apiKey: 'some api key',
+        apiSecret: 'some api secret'
+      };
+
+      it('should throw error', function () {
+        var fn = uploader.config.bind(uploader, fakeConfig);
+        expect(fn).to.throw;
+      });
+    });
+  });
+
   describe('.uploadImages()', function () {
     context('when given the path to directory containing images', function () {
       var uploader = rewire('../../lib/uploader');
-      uploader.config({
-        cloudName: 'some cloud name',
-        apiKey: 'some api key',
-        apiSecret: 'some api secret'
-      });
 
       var fakePath = '/path/to/images/dir';
       var fakeImageFileNames = ['image1.jpg', 'image2.jpg'];
