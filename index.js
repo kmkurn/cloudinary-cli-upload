@@ -1,35 +1,43 @@
 'use strict';
 
-var program = require('commander');
+var yargs = require('yargs');
 
 var uploader = require('./lib/uploader');
 var version = require('./package.json').version;
 
-var imagesDir;
 
-
-program
-  .version(version)
-  .description('Upload all images inside the given directory to Cloudinary')
-  .arguments('<directory>')
-  .action(function (directory) {
-    imagesDir = directory;
+var argv = yargs
+  .usage('$0 [options] <directory>')
+  .demand(1, 1)
+  .option('api-key', {
+    demand: true,
+    describe: 'Cloudinary API key',
+    type: 'string',
+    nargs: 1
   })
-  .option('--api-key', 'Cloudinary API key')
-  .option('--api-secret', 'Cloudinary API secret')
-  .option('--cloud-name', 'Cloudinary cloud name')
-  .parse(process.argv);
+  .option('api-secret', {
+    demand: true,
+    describe: 'Cloudinary API secret',
+    type: 'string',
+    nargs: 1
+  })
+  .option('cloud-name', {
+    demand: true,
+    describe: 'Cloudinary cloud name',
+    type: 'string',
+    nargs: 1
+  })
+  .help('h')
+  .alias('h', 'help')
+  .example('$0 --api-key 12345 --api-secret somesecret --cloud-name name ~/pics',
+           'Upload all images under ~/pics directory to Cloudinary')
+  .argv;
 
 uploader.config({
-  apiKey: program.apiKey,
-  apiSecret: program.apiSecret,
-  cloudName: program.cloudName
+  apiKey: argv.apiKey,
+  apiSecret: argv.apiSecret,
+  cloudName: argv.cloudName
 });
-
-if (typeof imagesDir === 'undefined') {
-  console.error('Exactly one directory containing images must be given');
-  process.exit(1);
-}
 
 function logError(e) {
   if (e instanceof Error) {
@@ -37,6 +45,8 @@ function logError(e) {
   }
   return JSON.stringify(e);
 }
+
+var imagesDir = argv._[0];
 
 uploader.uploadImages(imagesDir, function (err, result) {
   if (err) {
