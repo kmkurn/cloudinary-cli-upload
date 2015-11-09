@@ -1,5 +1,5 @@
 {
-  "name": "cloudinary-uploader",
+  "name": "cloudinary-cli-upload",
   "version": "1.0.0",
   "description": "Simple CLI to upload images to Cloudinary",
   "main": "index.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kemskems/cloudinary-uploader.git"
+    "url": "git+https://github.com/kemskems/cloudinary-cli-upload.git"
   },
   "keywords": [
     "cloudinary",
@@ -18,9 +18,9 @@
   "author": "Kemal Maulana <kemal.maulana@fastmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/kemskems/cloudinary-uploader/issues"
+    "url": "https://github.com/kemskems/cloudinary-cli-upload/issues"
   },
-  "homepage": "https://github.com/kemskems/cloudinary-uploader#readme",
+  "homepage": "https://github.com/kemskems/cloudinary-cli-upload#readme",
   "devDependencies": {
     "chai": "^3.4.0",
     "mocha": "^2.3.3",
