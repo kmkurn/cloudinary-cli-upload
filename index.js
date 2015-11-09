@@ -8,7 +8,7 @@ var version = require('./package.json').version;
 
 var argv = yargs
   .usage('$0 [options] <directory>')
-  .demand(1, 1)
+  .demand(1)
   .option('api-key', {
     demand: true,
     describe: 'Cloudinary API key',
@@ -60,12 +60,12 @@ function logError(e) {
   return JSON.stringify(e);
 }
 
-var imagesDir = argv._[0];
+var images = argv._;
 var options = {
   folder: argv.folder
 };
 
-uploader.uploadImages(imagesDir, options, function (err, result) {
+uploader.uploadImages(images, options, function (err, result) {
   if (err) {
     return console.error(logError(err));
   }

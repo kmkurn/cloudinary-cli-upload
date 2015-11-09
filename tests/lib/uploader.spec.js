@@ -57,42 +57,34 @@ describe('lib/uploader.js', function () {
   });
 
   describe('.uploadImages()', function () {
-    context('when given the path to directory containing images', function () {
+    context('when given an array of paths to images', function () {
       var uploader = rewire('../../lib/uploader');
 
-      var fakePath = '/path/to/images/dir';
-      var fakeImageFileNames = ['image1.jpg', 'image2.jpg'];
+      var fakeImages = ['/path/to/dir/image1.jpg', '/path/to/dir/image2.jpg'];
       var fakeUploadResult = {some: 'object'};
 
       var uploadStub;
-      var readdirStub;
 
       before('setup spies, stubs, etc', function () {
         var cloudinary = uploader.__get__('cloudinary');
-        var fs = uploader.__get__('fs');
 
         uploadStub = sinon.stub(cloudinary.uploader, 'upload', function (path, callback) {
           callback(fakeUploadResult);
         });
-
-        readdirStub = sinon.stub(fs, 'readdirSync');
-        readdirStub.returns(fakeImageFileNames);
       });
 
       after('tear down spies, stubs, etc', function () {
         uploadStub.restore();
-        readdirStub.restore();
       });
 
       it('should upload to cloudinary', function (done) {
-        uploader.uploadImages(fakePath, function () {
+        uploader.uploadImages(fakeImages, function () {
           try {
-            expect(uploadStub).to.have.callCount(fakeImageFileNames.length);
-            fakeImageFileNames.forEach(function (filename, index) {
-              var fullPath = path.join(fakePath, filename);
+            expect(uploadStub).to.have.callCount(fakeImages.length);
+            fakeImages.forEach(function (imagePath, index) {
               var spyCall = uploadStub.getCall(index);
               expect(spyCall).to.have.been.calledWith(
-                fullPath,
+                imagePath,
                 sinon.match.func
               );
             });
@@ -104,11 +96,15 @@ describe('lib/uploader.js', function () {
       });
 
       it('should call the callback with augmented upload results', function (done) {
-        uploader.uploadImages(fakePath, function (err, result) {
-          var toAugmentedUploadResult = function (filename) {
-            return {name: filename, cloudinaryData: fakeUploadResult};
+        uploader.uploadImages(fakeImages, function (err, result) {
+          var toAugmentedUploadResult = function (imagePath) {
+            return {
+              name: path.basename(imagePath),
+              url: path.dirname(imagePath),
+              cloudinaryData: fakeUploadResult
+            };
           };
-          var expected = fakeImageFileNames.map(toAugmentedUploadResult);
+          var expected = fakeImages.map(toAugmentedUploadResult);
 
           try {
             expect(err).to.be.null;
@@ -124,33 +120,27 @@ describe('lib/uploader.js', function () {
     context('when called with options', function () {
       var uploader = rewire('../../lib/uploader');
 
-      var fakeImageFileNames = ['image1.jpg', 'image2.jpg'];
+      var fakeImages = ['/path/to/dir/image1.jpg', '/path/to/dir/image2.jpg'];
       var fakeOptions = {someKey: 'someValue'};
 
       var uploadStub;
-      var readdirStub;
 
       before('setup spies, stubs, etc', function () {
         var cloudinary = uploader.__get__('cloudinary');
-        var fs = uploader.__get__('fs');
 
         uploadStub = sinon.stub(cloudinary.uploader, 'upload', function (path, callback) {
           callback({some: 'result'});
         });
-
-        readdirStub = sinon.stub(fs, 'readdirSync');
-        readdirStub.returns(fakeImageFileNames);
       });
 
       after('tear down spies, stubs, etc', function () {
         uploadStub.restore();
-        readdirStub.restore();
       });
 
       it('should call cloudinary upload API with the given options', function (done) {
-        uploader.uploadImages('/path/to/dir', fakeOptions, function () {
+        uploader.uploadImages(fakeImages, fakeOptions, function () {
           try {
-            fakeImageFileNames.forEach(function (filename, index) {
+            fakeImages.forEach(function (imagePath, index) {
               var spyCall = uploadStub.getCall(index);
               expect(spyCall).to.have.been.calledWith(
                 sinon.match.string,
