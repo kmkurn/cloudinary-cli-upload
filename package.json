@@ -2,7 +2,9 @@
   "name": "cloudinary-cli-upload",
   "version": "1.0.0",
   "description": "Simple CLI to upload images to Cloudinary",
-  "main": "index.js",
+  "bin": {
+    "cloudinary-upload": "index.js"
+  },
   "scripts": {
     "test": "mocha --recursive tests/"
   },
@@ -21,6 +23,9 @@
     "url": "https://github.com/kemskems/cloudinary-cli-upload/issues"
   },
   "homepage": "https://github.com/kemskems/cloudinary-cli-upload#readme",
+  "engine": {
+    "node": ">= 0.10.32"
+  },
   "devDependencies": {
     "chai": "^3.4.0",
     "mocha": "^2.3.3",
