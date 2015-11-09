@@ -12,19 +12,22 @@ var argv = yargs
   .usage('$0 [options] <file>...')
   .demand(1)
   .option('api-key', {
-    demand: true,
+    alias: 'k',
+    demand: false,
     describe: 'Cloudinary API key',
     type: 'string',
     nargs: 1
   })
   .option('api-secret', {
-    demand: true,
+    alias: 's',
+    demand: false,
     describe: 'Cloudinary API secret',
     type: 'string',
     nargs: 1
   })
   .option('cloud-name', {
-    demand: true,
+    alias: 'n',
+    demand: false,
     describe: 'Cloudinary cloud name',
     type: 'string',
     nargs: 1
@@ -44,10 +47,22 @@ var argv = yargs
   })
   .help('h')
   .alias('h', 'help')
-  .example('$0 --api-key 12345 --api-secret somesecret --cloud-name name ~/pics/*.jpg',
-           'Upload all JPG images under ~/pics directory to Cloudinary')
+  .example(
+    '$0 --api-key 12345 --api-secret somesecret --cloud-name name ~/pics/*.jpg',
+    'Upload all JPG images under ~/pics directory to Cloudinary'
+  )
+  .example(
+    '$0 ~/pics/*.jpg',
+    'Same as before but get the Cloudinary credential from CLOUDINARY_URL ' +
+      'set in .env under current directory'
+  )
   .version(version)
   .argv;
+
+if (!argv.apiKey || !argv.apiSecret || !argv.cloudName) {
+  console.info('One of API key, secret, or cloud name is not specified. Using .env instead.');
+  require('dotenv').load();
+}
 
 uploader.config({
   apiKey: argv.apiKey,
