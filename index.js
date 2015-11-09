@@ -31,6 +31,7 @@ var argv = yargs
   .alias('h', 'help')
   .example('$0 --api-key 12345 --api-secret somesecret --cloud-name name ~/pics',
            'Upload all images under ~/pics directory to Cloudinary')
+  .version(version)
   .argv;
 
 uploader.config({
