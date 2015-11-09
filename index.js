@@ -42,8 +42,7 @@ var argv = yargs
   .option('json', {
     demand: false,
     describe: 'Print result as JSON',
-    type: 'boolean',
-    nargs: 1
+    type: 'boolean'
   })
   .help('h')
   .alias('h', 'help')
@@ -88,7 +87,7 @@ uploader.uploadImages(images, options, function (err, result) {
   }
 
   if (argv.json) {
-    console.log(JSON.stringify(result));
+    console.log(JSON.stringify(result, null, 2));
   } else {
     console.log(result);
   }
