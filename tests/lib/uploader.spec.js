@@ -13,8 +13,8 @@ var expect = chai.expect;
 describe('lib/uploader.js', function () {
   describe('.uploadImages()', function () {
     context('when given the path to directory containing images', function () {
-      var createUploader = rewire('../../lib/uploader');
-      var uploader = createUploader({
+      var uploader = rewire('../../lib/uploader');
+      uploader.config({
         cloudName: 'some cloud name',
         apiKey: 'some api key',
         apiSecret: 'some api secret'
@@ -26,12 +26,10 @@ describe('lib/uploader.js', function () {
 
       var uploadStub;
       var readdirStub;
-      var logSpy;
-      var revertFn;
 
       before('setup spies, stubs, etc', function () {
-        var cloudinary = createUploader.__get__('cloudinary');
-        var fs = createUploader.__get__('fs');
+        var cloudinary = uploader.__get__('cloudinary');
+        var fs = uploader.__get__('fs');
 
         uploadStub = sinon.stub(cloudinary.uploader, 'upload', function (path, callback) {
           callback(fakeUploadResult);
@@ -39,34 +37,39 @@ describe('lib/uploader.js', function () {
 
         readdirStub = sinon.stub(fs, 'readdirSync');
         readdirStub.returns(fakeImageFileNames);
-
-        logSpy = sinon.spy();
-        revertFn = createUploader.__set__({
-          console: {
-            log: logSpy
-          }
-        })
       });
 
       after('tear down spies, stubs, etc', function () {
-        uploadStub.reset();
+        uploadStub.restore();
         readdirStub.restore();
-        revertFn();
       });
 
-      it('should upload to cloudinary', function () {
-        uploader.upload(fakePath);
-
-        expect(uploadStub).to.have.callCount(fakeImageFileNames.length);
-        fakeImageFileNames.forEach(function (filename, index) {
-          var fullPath = path.join(fakePath, filename);
-          var spyCall = uploadStub.getCall(index);
-          expect(spyCall).to.have.been.calledWith(fullPath);
+      it('should upload to cloudinary', function (done) {
+        uploader.uploadImages(fakePath, function () {
+          try {
+            expect(uploadStub).to.have.callCount(fakeImageFileNames.length);
+            fakeImageFileNames.forEach(function (filename, index) {
+              var fullPath = path.join(fakePath, filename);
+              var spyCall = uploadStub.getCall(index);
+              expect(spyCall).to.have.been.calledWith(fullPath);
+            });
+          } catch (e) {
+            return done(e);
+          }
+          done();
         });
       });
 
-      it('should print the upload result to stdout', function () {
-        expect(logSpy).to.have.been.calledWithExactly(JSON.stringify(fakeUploadResult));
+      it('should call the callback with the upload results', function (done) {
+        uploader.uploadImages(fakePath, function (err, result) {
+          try {
+            expect(err).to.be.null;
+            expect(result).to.deep.equal([fakeUploadResult, fakeUploadResult])
+          } catch (e) {
+            return done(e);
+          }
+          done();
+        });
       });
     });
   });
