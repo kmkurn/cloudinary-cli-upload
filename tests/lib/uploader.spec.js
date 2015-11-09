@@ -100,7 +100,7 @@ describe('lib/uploader.js', function () {
           var toAugmentedUploadResult = function (imagePath) {
             return {
               name: path.basename(imagePath),
-              url: path.dirname(imagePath),
+              url: path.resolve(imagePath),
               cloudinaryData: fakeUploadResult
             };
           };
