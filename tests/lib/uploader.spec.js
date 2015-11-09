@@ -103,11 +103,16 @@ describe('lib/uploader.js', function () {
         });
       });
 
-      it('should call the callback with the upload results', function (done) {
+      it('should call the callback with augmented upload results', function (done) {
         uploader.uploadImages(fakePath, function (err, result) {
+          var toAugmentedUploadResult = function (filename) {
+            return {name: filename, cloudinaryData: fakeUploadResult};
+          };
+          var expected = fakeImageFileNames.map(toAugmentedUploadResult);
+
           try {
             expect(err).to.be.null;
-            expect(result).to.deep.equal([fakeUploadResult, fakeUploadResult])
+            expect(result).to.deep.equal(expected);
           } catch (e) {
             return done(e);
           }
