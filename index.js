@@ -58,16 +58,16 @@ var argv = yargs
   .version(version)
   .argv;
 
-if (!argv.apiKey || !argv.apiSecret || !argv.cloudName) {
+if (argv.apiKey && argv.apiSecret && argv.cloudName) {
+  uploader.config({
+    apiKey: argv.apiKey,
+    apiSecret: argv.apiSecret,
+    cloudName: argv.cloudName
+  });
+} else {
   console.info('One of API key, secret, or cloud name is not specified. Using .env instead.');
   require('dotenv').load();
 }
-
-uploader.config({
-  apiKey: argv.apiKey,
-  apiSecret: argv.apiSecret,
-  cloudName: argv.cloudName
-});
 
 function logError(e) {
   if (e instanceof Error) {
