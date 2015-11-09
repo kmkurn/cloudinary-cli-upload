@@ -7,7 +7,7 @@ var version = require('./package.json').version;
 
 
 var argv = yargs
-  .usage('$0 [options] <directory>')
+  .usage('$0 [options] <file>...')
   .demand(1)
   .option('api-key', {
     demand: true,
@@ -42,8 +42,8 @@ var argv = yargs
   })
   .help('h')
   .alias('h', 'help')
-  .example('$0 --api-key 12345 --api-secret somesecret --cloud-name name ~/pics',
-           'Upload all images under ~/pics directory to Cloudinary')
+  .example('$0 --api-key 12345 --api-secret somesecret --cloud-name name ~/pics/*.jpg',
+           'Upload all JPG images under ~/pics directory to Cloudinary')
   .version(version)
   .argv;
 
