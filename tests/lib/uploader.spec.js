@@ -72,5 +72,50 @@ describe('lib/uploader.js', function () {
         });
       });
     });
+
+    context('when called with options', function () {
+      var uploader = rewire('../../lib/uploader');
+
+      var fakeImageFileNames = ['image1.jpg', 'image2.jpg'];
+      var fakeOptions = {someKey: 'someValue'};
+
+      var uploadStub;
+      var readdirStub;
+
+      before('setup spies, stubs, etc', function () {
+        var cloudinary = uploader.__get__('cloudinary');
+        var fs = uploader.__get__('fs');
+
+        uploadStub = sinon.stub(cloudinary.uploader, 'upload', function (path, callback) {
+          callback({some: 'result'});
+        });
+
+        readdirStub = sinon.stub(fs, 'readdirSync');
+        readdirStub.returns(fakeImageFileNames);
+      });
+
+      after('tear down spies, stubs, etc', function () {
+        uploadStub.restore();
+        readdirStub.restore();
+      });
+
+      it('should call cloudinary upload API with the given options', function (done) {
+        uploader.uploadImages('/path/to/dir', fakeOptions, function () {
+          try {
+            fakeImageFileNames.forEach(function (filename, index) {
+              var spyCall = uploadStub.getCall(index);
+              expect(spyCall).to.have.been.calledWith(
+                sinon.match.string,
+                sinon.match.func,
+                fakeOptions
+              );
+            });
+          } catch (e) {
+            return done(e);
+          }
+          done();
+        });
+      });
+    });
   });
 });
