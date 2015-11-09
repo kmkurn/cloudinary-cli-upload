@@ -91,7 +91,10 @@ describe('lib/uploader.js', function () {
             fakeImageFileNames.forEach(function (filename, index) {
               var fullPath = path.join(fakePath, filename);
               var spyCall = uploadStub.getCall(index);
-              expect(spyCall).to.have.been.calledWith(fullPath);
+              expect(spyCall).to.have.been.calledWith(
+                fullPath,
+                sinon.match.func
+              );
             });
           } catch (e) {
             return done(e);
