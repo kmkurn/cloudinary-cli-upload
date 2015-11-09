@@ -34,6 +34,12 @@ var argv = yargs
     type: 'string',
     nargs: 1
   })
+  .option('json', {
+    demand: false,
+    describe: 'Print result as JSON',
+    type: 'boolean',
+    nargs: 1
+  })
   .help('h')
   .alias('h', 'help')
   .example('$0 --api-key 12345 --api-secret somesecret --cloud-name name ~/pics',
@@ -61,7 +67,11 @@ var options = {
 
 uploader.uploadImages(imagesDir, options, function (err, result) {
   if (err) {
-    console.error(logError(err));
+    return console.error(logError(err));
+  }
+
+  if (argv.json) {
+    console.log(JSON.stringify(result));
   } else {
     console.log(result);
   }
