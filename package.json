@@ -1,6 +1,6 @@
 {
   "name": "cloudinary-cli-upload",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Simple CLI to upload images to Cloudinary",
   "bin": {
     "cloudinary-upload": "index.js"
