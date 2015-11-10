@@ -65,7 +65,6 @@ if (argv.apiKey && argv.apiSecret && argv.cloudName) {
     cloudName: argv.cloudName
   });
 } else {
-  console.info('One of API key, secret, or cloud name is not specified. Using .env instead.');
   require('dotenv').load();
 }
 
